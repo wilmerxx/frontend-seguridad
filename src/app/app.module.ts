@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {RouterOutlet} from "@angular/router";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {HighchartsChartModule} from "highcharts-angular";
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
   imports: [
     BrowserModule,
     RouterOutlet,
-    NgbModule
+    NgbModule,
+    HighchartsChartModule
   ],
   providers: [],
   bootstrap: [AppComponent]
