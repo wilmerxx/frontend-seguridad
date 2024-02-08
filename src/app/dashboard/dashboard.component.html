@@ -88,32 +88,76 @@
   <div class="row">
     <div class="col-md-12 card">
       <div class="card-header">
-        <h2 class="text-center">Registro de cookies encontradas</h2>
+        <h2 class="text-center">Registro de cookies Firefox</h2>
       </div>
-      <div class="card-body" *ngIf="getCookies()">
+      <div class="card-body">
+
+        <div class = 'table-responsive'>
+          <mat-paginator [length]="totalFirefoxPages"
+                         [pageSize]="itemsPerPageFirefox"
+                         [length]="totalFirefoxPages"
+                         aria-label="Select page of users"
+                         [pageSizeOptions]="[5, 10, 25, 100]"
+                         (page)="onPageChangeFirefox($event.pageIndex + 1)">
+          </mat-paginator>
         <table class="table table-striped table-bordered">
           <thead>
             <tr>
               <th>Id</th>
-              <th>Nombre</th>
-              <th>Valor</th>
-              <th>Url</th>
-              <th>Fecha</th>
+              <th style="width: 2%;">Nombre</th>
+              <th style="width: 50%;">Valor</th>
+              <th style="width: 15%;">Url</th>
+              <th style="width: 25%;">Fecha</th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let cookie of getCookies()">
-              <td>{{cookie.id}}</td>
-              <td>{{cookie.nombre}}</td>
-              <td>{{cookie.valor}}</td>
-              <td>{{cookie.url}}</td>
-              <td>{{cookie.fecha}}</td>
+          <tbody >
+            <tr *ngFor="let item of paginatedUsuarioFirefox ; let i=index">
+              <td>{{(pFirefox-1)*10 + i + 1}}</td>
+              <td>{{item.name}}</td>
+              <td style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{item.value}}</td>
+              <td>{{item.host}}</td>
+              <td>{{item.lastAccessed}}</td>
             </tr>
           </tbody>
         </table>
 
       </div>
+    </div>
+    </div>
+  </div>
 
+  <!--tabla de navegador edge-->
+  <div class="row">
+    <div class="col-md-12 card">
+      <div class="card-header">
+        <h2 class="text-center">Registro de cookies Edge</h2>
+      </div>
+      <div class="card-body" >
+        <div class = 'table-responsive'>
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th style="width: 2%;">Nombre</th>
+              <th style="width: 15%;">Valor</th>
+              <th style="width: 15%;">Url</th>
+              <th style="width: 25%;">Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of paginatedUsuariosEdge ; let i=index">
+              <td>{{(pEdge-1)*10 + i + 1}}</td>
+              <td>{{item.name}}</td>
+              <td style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{item.value}}</td>
+              <td>{{item.host_key}}</td>
+              <td>{{item.creation_utc}}</td>
+            </tr>
+          </tbody>
+        </table>
+          <pagination-controls class="text-center" (pageChange)="onPageChangeEdge($event)" [maxSize]="totalEdgePages"></pagination-controls>
+
+      </div>
+    </div>
     </div>
   </div>
 
