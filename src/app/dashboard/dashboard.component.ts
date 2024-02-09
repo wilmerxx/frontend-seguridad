@@ -1,15 +1,73 @@
 import {Component, OnInit, AfterViewInit, ElementRef, ViewChild, HostListener} from '@angular/core';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {createChart, CrosshairMode,ColorType} from "lightweight-charts";
 import * as Highcharts from 'highcharts/highstock';
 import {ServicesService} from "../service/services.service";
 import {MatPaginator} from "@angular/material/paginator";
+import {Firefox} from "../modelos/firefox";
+import {MatSort} from '@angular/material/sort';
+import {MatTableDataSource} from '@angular/material/table';
 
+
+export interface UserData {
+  id: string;
+  name: string;
+  progress: string;
+  fruit: string;
+}
+
+/** Constants used to fill up our data base. */
+const FRUITS: string[] = [
+  'blueberry',
+  'lychee',
+  'kiwi',
+  'mango',
+  'peach',
+  'lime',
+  'pomegranate',
+  'pineapple',
+];
+const NAMES: string[] = [
+  'Maia',
+  'Asher',
+  'Olivia',
+  'Atticus',
+  'Amelia',
+  'Jack',
+  'Charlotte',
+  'Theodore',
+  'Isla',
+  'Oliver',
+  'Isabella',
+  'Jasper',
+  'Cora',
+  'Levi',
+  'Violet',
+  'Arthur',
+  'Mia',
+  'Thomas',
+  'Elizabeth',
+];
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
+  displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
+  dataSource: MatTableDataSource<UserData>;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+
   Highcharts: typeof Highcharts = Highcharts; // required
   chartOptions!: Highcharts.Options;
   chartOptions2!: Highcharts.Options;
@@ -42,7 +100,49 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   itemsPerPageFirefox: number = 10; // Cambia esto al número de elementos que quieres mostrar por página
   itemsPerPageEdge: number = 10;
   constructor(private service: ServicesService) {
+    const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
+    // Assign the data to the data source for the table to render
+    this.dataSource = new MatTableDataSource(users);
+  }
 
+  ngOnInit(): void {
+   this.usuarios.length = 23;
+    this.contrasenias.length = 12;
+    this._getEdge();
+    this._getFirefox();
+    this.getPaginatedUsuarioFirefox()
+
+  }
+
+  getCookies(): any[] {
+    return [
+      {id: 1, nombre: 'cookie1', valor: 'valor1', url: 'https://www.google.com', fecha: '2021-10-19'},
+      {id: 2, nombre: 'cookie2', valor: 'valor2', url: 'https://www.google.com', fecha: '2021-10-20'},
+      {id: 3, nombre: 'cookie3', valor: 'valor3', url: 'https://www.google.com', fecha: '2021-10-21'},
+      {id: 4, nombre: 'cookie4', valor: 'valor4', url: 'https://www.google.com', fecha: '2021-10-22'},
+      {id: 5, nombre: 'cookie5', valor: 'valor5', url: 'https://www.google.com', fecha: '2021-10-23'},
+      {id: 6, nombre: 'cookie6', valor: 'valor6', url: 'https://www.google.com', fecha: '2021-10-24'},
+      {id: 7, nombre: 'cookie7', valor: 'valor7', url: 'https://www.google.com', fecha: '2021-10-25'},
+      {id: 8, nombre: 'cookie8', valor: 'valor8', url: 'https://www.google.com', fecha: '2021-10-26'},
+      {id: 9, nombre: 'cookie9', valor: 'valor9', url: 'https://www.google.com', fecha: '2021-10-27'},
+      {id: 10, nombre: 'cookie10', valor: 'valor10', url: 'https://www.google.com', fecha: '2021-10-28'},
+      {id: 11, nombre: 'cookie11', valor: 'valor11', url: 'https://www.google.com', fecha: '2021-10-29'},
+      {id: 12, nombre: 'cookie12', valor: 'valor12', url: 'https://www.google.com', fecha: '2021-10-30'},
+      {id: 13, nombre: 'cookie13', valor: 'valor13', url: 'https://www.google.com', fecha: '2021-10-31'},
+      {id: 14, nombre: 'cookie14', valor: 'valor14', url: 'https://www.google.com', fecha: '2021-11-01'},
+    ];
+  }
+  ngAfterViewInit(): void {
+    this.createChartAndAddSeries();
+    this.crearPaginasVisitadas();
+    this.crearTop10PaginasVisitadas();
+    this.crearBarChart();
+    this.createDashboardChart();
+    this.getChartOptions();
+    this.updateChartSize();
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    console.log(this.dataSource);
   }
 
   onPageChangeFirefox(event: number) {
@@ -89,44 +189,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     return this.usuariosEdge.slice(start, end);
   }
 
-  ngOnInit(): void {
-   this.usuarios.length = 23;
-    this.contrasenias.length = 12;
-    this._getEdge();
-    this._getFirefox();
-    this.getPaginatedUsuarioFirefox()
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
-
-
-
-  getCookies(): any[] {
-    return [
-      {id: 1, nombre: 'cookie1', valor: 'valor1', url: 'https://www.google.com', fecha: '2021-10-19'},
-      {id: 2, nombre: 'cookie2', valor: 'valor2', url: 'https://www.google.com', fecha: '2021-10-20'},
-      {id: 3, nombre: 'cookie3', valor: 'valor3', url: 'https://www.google.com', fecha: '2021-10-21'},
-      {id: 4, nombre: 'cookie4', valor: 'valor4', url: 'https://www.google.com', fecha: '2021-10-22'},
-      {id: 5, nombre: 'cookie5', valor: 'valor5', url: 'https://www.google.com', fecha: '2021-10-23'},
-      {id: 6, nombre: 'cookie6', valor: 'valor6', url: 'https://www.google.com', fecha: '2021-10-24'},
-      {id: 7, nombre: 'cookie7', valor: 'valor7', url: 'https://www.google.com', fecha: '2021-10-25'},
-      {id: 8, nombre: 'cookie8', valor: 'valor8', url: 'https://www.google.com', fecha: '2021-10-26'},
-      {id: 9, nombre: 'cookie9', valor: 'valor9', url: 'https://www.google.com', fecha: '2021-10-27'},
-      {id: 10, nombre: 'cookie10', valor: 'valor10', url: 'https://www.google.com', fecha: '2021-10-28'},
-      {id: 11, nombre: 'cookie11', valor: 'valor11', url: 'https://www.google.com', fecha: '2021-10-29'},
-      {id: 12, nombre: 'cookie12', valor: 'valor12', url: 'https://www.google.com', fecha: '2021-10-30'},
-      {id: 13, nombre: 'cookie13', valor: 'valor13', url: 'https://www.google.com', fecha: '2021-10-31'},
-      {id: 14, nombre: 'cookie14', valor: 'valor14', url: 'https://www.google.com', fecha: '2021-11-01'},
-    ];
-  }
-  ngAfterViewInit(): void {
-    this.createChartAndAddSeries();
-    this.crearPaginasVisitadas();
-    this.crearTop10PaginasVisitadas();
-    this.crearBarChart();
-    this.createDashboardChart();
-    this.getChartOptions();
-    this.updateChartSize();
-  }
-
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     this.updateChartSize();
@@ -542,3 +612,19 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   protected readonly events = module
 }
+
+function createNewUser(id: number): UserData {
+  const name =
+    NAMES[Math.round(Math.random() * (NAMES.length - 1))] +
+    ' ' +
+    NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) +
+    '.';
+
+  return {
+    id: id.toString(),
+    name: name,
+    progress: Math.round(Math.random() * 100).toString(),
+    fruit: FRUITS[Math.round(Math.random() * (FRUITS.length - 1))],
+  };
+}
+

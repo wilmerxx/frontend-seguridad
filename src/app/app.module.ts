@@ -10,6 +10,11 @@ import {HttpClientModule} from "@angular/common/http";
 import {NgxPaginationModule} from "ngx-pagination";
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatPaginatorModule ,MatPaginatorIntl} from '@angular/material/paginator';
+import {MatTableModule} from "@angular/material/table";
+import {MatIconModule} from "@angular/material/icon";
+import {MatCardModule} from "@angular/material/card";
+import {MatInputModule} from "@angular/material/input";
+
 
 
 @NgModule({
@@ -25,7 +30,11 @@ import { MatPaginatorModule ,MatPaginatorIntl} from '@angular/material/paginator
     HttpClientModule,
     NgxPaginationModule,
     MatSlideToggleModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatTableModule,
+    MatIconModule,
+    MatCardModule,
+    MatInputModule
   ],
   providers: [
     MatPaginatorIntl
