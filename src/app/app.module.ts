@@ -14,6 +14,7 @@ import {MatTableModule} from "@angular/material/table";
 import {MatIconModule} from "@angular/material/icon";
 import {MatCardModule} from "@angular/material/card";
 import {MatInputModule} from "@angular/material/input";
+import {MatDatepickerModule} from "@angular/material/datepicker";
 
 
 
@@ -34,7 +35,8 @@ import {MatInputModule} from "@angular/material/input";
     MatTableModule,
     MatIconModule,
     MatCardModule,
-    MatInputModule
+    MatInputModule,
+    MatDatepickerModule
   ],
   providers: [
     MatPaginatorIntl

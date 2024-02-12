@@ -7,47 +7,9 @@ import {MatPaginator} from "@angular/material/paginator";
 import {Firefox} from "../modelos/firefox";
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
+import {Edge} from "../modelos/edge";
 
 
-export interface UserData {
-  id: string;
-  name: string;
-  progress: string;
-  fruit: string;
-}
-
-/** Constants used to fill up our data base. */
-const FRUITS: string[] = [
-  'blueberry',
-  'lychee',
-  'kiwi',
-  'mango',
-  'peach',
-  'lime',
-  'pomegranate',
-  'pineapple',
-];
-const NAMES: string[] = [
-  'Maia',
-  'Asher',
-  'Olivia',
-  'Atticus',
-  'Amelia',
-  'Jack',
-  'Charlotte',
-  'Theodore',
-  'Isla',
-  'Oliver',
-  'Isabella',
-  'Jasper',
-  'Cora',
-  'Levi',
-  'Violet',
-  'Arthur',
-  'Mia',
-  'Thomas',
-  'Elizabeth',
-];
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -61,8 +23,9 @@ const NAMES: string[] = [
   ],
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
-  dataSource: MatTableDataSource<UserData>;
+
+  displayedColumns: string[] = ['index','name','creation_utc', 'expires_utc', 'host_key', 'last_access_utc','encrypted_value'];
+  dataSource!: MatTableDataSource<Edge>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -100,9 +63,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   itemsPerPageFirefox: number = 10; // Cambia esto al número de elementos que quieres mostrar por página
   itemsPerPageEdge: number = 10;
   constructor(private service: ServicesService) {
-    const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
-    // Assign the data to the data source for the table to render
-    this.dataSource = new MatTableDataSource(users);
+
   }
 
   ngOnInit(): void {
@@ -111,7 +72,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this._getEdge();
     this._getFirefox();
     this.getPaginatedUsuarioFirefox()
-
+    this.service.getEdge().subscribe(data => {
+      this.dataSource = new MatTableDataSource(data);
+      console.log("datos de la tabla");
+      console.log(this.dataSource.data);
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+    });
   }
 
   getCookies(): any[] {
@@ -140,9 +107,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.createDashboardChart();
     this.getChartOptions();
     this.updateChartSize();
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-    console.log(this.dataSource);
   }
 
   onPageChangeFirefox(event: number) {
@@ -153,7 +117,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.service.getFirefox().subscribe(data => {
       this.usuarioFirefox = data;
       this.totalFirefoxPages = Math.ceil(this.usuarioFirefox.length / this.itemsPerPageFirefox);
-      console.log(this.usuarioFirefox);
+      //console.log(this.usuarioFirefox);
     });
   }
 
@@ -165,18 +129,40 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.service.getEdge().subscribe(data => {
       this.usuariosEdge = data;
       this.totalEdgePages = Math.ceil(this.usuariosEdge.length / this.itemsPerPageEdge);
-      console.log(this.usuariosEdge);
+      //console.log(this.usuariosEdge);
     });
   }
+
 
   _getFirefox() {
     this.service.getFirefox().subscribe(data => {
       this.usuarioFirefox= data;
       this.totalFirefoxPages = Math.ceil(this.usuarioFirefox.length / this.itemsPerPageFirefox);
-      console.log(this.usuarioFirefox);
+      //console.log(this.usuarioFirefox);
     });
   }
 
+
+  getGraficaDeNumeroDePaginasWebSinRepeticionesEdge() {
+    const contarPaginas = {};
+    let paginas: any[] = [];
+    this.service.getEdge().subscribe(data => {
+      data.forEach((usuario) => {
+        if (usuario.host_key) {
+          // @ts-ignore
+          contarPaginas[usuario.host_key]++
+        } else {
+          // @ts-ignore
+          contarPaginas[usuario.host_key] = 1;
+        }
+      });
+      for (let pagina in contarPaginas) {
+        paginas.push(pagina);
+      }
+      console.log(paginas);
+      console.log(contarPaginas);
+    });
+  }
   get paginatedUsuarioFirefox() {
     const start = (this.pFirefox - 1) * this.itemsPerPageFirefox;
     const end = start + this.itemsPerPageFirefox;
@@ -610,21 +596,5 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  protected readonly events = module
-}
-
-function createNewUser(id: number): UserData {
-  const name =
-    NAMES[Math.round(Math.random() * (NAMES.length - 1))] +
-    ' ' +
-    NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) +
-    '.';
-
-  return {
-    id: id.toString(),
-    name: name,
-    progress: Math.round(Math.random() * 100).toString(),
-    fruit: FRUITS[Math.round(Math.random() * (FRUITS.length - 1))],
-  };
 }
 

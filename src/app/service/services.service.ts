@@ -4,7 +4,7 @@ import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 import {Edge} from "../modelos/edge";
 import {Firefox} from "../modelos/firefox";
-
+import {EdgeUser} from "../modelos/edge-user";
 
 @Injectable({
   providedIn: 'root'
@@ -12,9 +12,6 @@ import {Firefox} from "../modelos/firefox";
 export class ServicesService {
 
   private baseUrl = environment.baseUrl+'/cookies';
-
-  edge: Edge[] = []
-  firefox: Firefox[] = []
 
   constructor(private http: HttpClient) { }
 
@@ -24,5 +21,9 @@ export class ServicesService {
 
   getFirefox(): Observable<Firefox[]> {
     return this.http.get<Firefox[]>(`${this.baseUrl}/firefox`);
+  }
+
+  getEdgeUser(): Observable<EdgeUser[]> {
+    return this.http.get<EdgeUser[]>(`${this.baseUrl}/usuarios/edge`);
   }
 }
