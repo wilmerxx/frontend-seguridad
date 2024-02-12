@@ -1,13 +1,36 @@
 import {Component, OnInit, AfterViewInit, ElementRef, ViewChild, HostListener} from '@angular/core';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {createChart, CrosshairMode,ColorType} from "lightweight-charts";
 import * as Highcharts from 'highcharts/highstock';
+import {ServicesService} from "../service/services.service";
+import {MatPaginator} from "@angular/material/paginator";
+import {Firefox} from "../modelos/firefox";
+import {MatSort} from '@angular/material/sort';
+import {MatTableDataSource} from '@angular/material/table';
+import {Edge} from "../modelos/edge";
+
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
+
+  displayedColumns: string[] = ['index','name','creation_utc', 'expires_utc', 'host_key', 'last_access_utc','encrypted_value'];
+  dataSource!: MatTableDataSource<Edge>;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+
   Highcharts: typeof Highcharts = Highcharts; // required
   chartOptions!: Highcharts.Options;
   chartOptions2!: Highcharts.Options;
@@ -24,15 +47,38 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   public top10PaginasVisitadas: any;
   public barChart: any;
   public usuarios: Array<any> = [];
+  public usuariosEdge: Array<any> = [];
   public contrasenias = [];
+  public usuarioFirefox: Array<any> = [];
 
-  constructor() {
+  p2: number = 1;
+
+  p: number = 1;
+
+  totalFirefoxPages: number = 0;
+  totalEdgePages: number = 0;
+
+  pFirefox: number = 1;
+  pEdge: number = 1;
+  itemsPerPageFirefox: number = 10; // Cambia esto al número de elementos que quieres mostrar por página
+  itemsPerPageEdge: number = 10;
+  constructor(private service: ServicesService) {
 
   }
 
   ngOnInit(): void {
    this.usuarios.length = 23;
     this.contrasenias.length = 12;
+    this._getEdge();
+    this._getFirefox();
+    this.getPaginatedUsuarioFirefox()
+    this.service.getEdge().subscribe(data => {
+      this.dataSource = new MatTableDataSource(data);
+      console.log("datos de la tabla");
+      console.log(this.dataSource.data);
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+    });
   }
 
   getCookies(): any[] {
@@ -63,6 +109,80 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.updateChartSize();
   }
 
+  onPageChangeFirefox(event: number) {
+    this.pFirefox = event;
+    this.getPaginatedUsuarioFirefox();
+  }
+  getPaginatedUsuarioFirefox() {
+    this.service.getFirefox().subscribe(data => {
+      this.usuarioFirefox = data;
+      this.totalFirefoxPages = Math.ceil(this.usuarioFirefox.length / this.itemsPerPageFirefox);
+      //console.log(this.usuarioFirefox);
+    });
+  }
+
+  onPageChangeEdge(event: number) {
+    this.pEdge = event;
+  }
+
+  _getEdge() {
+    this.service.getEdge().subscribe(data => {
+      this.usuariosEdge = data;
+      this.totalEdgePages = Math.ceil(this.usuariosEdge.length / this.itemsPerPageEdge);
+      //console.log(this.usuariosEdge);
+    });
+  }
+
+
+  _getFirefox() {
+    this.service.getFirefox().subscribe(data => {
+      this.usuarioFirefox= data;
+      this.totalFirefoxPages = Math.ceil(this.usuarioFirefox.length / this.itemsPerPageFirefox);
+      //console.log(this.usuarioFirefox);
+    });
+  }
+
+
+  getGraficaDeNumeroDePaginasWebSinRepeticionesEdge() {
+    const contarPaginas = {};
+    let paginas: any[] = [];
+    this.service.getEdge().subscribe(data => {
+      data.forEach((usuario) => {
+        if (usuario.host_key) {
+          // @ts-ignore
+          contarPaginas[usuario.host_key]++
+        } else {
+          // @ts-ignore
+          contarPaginas[usuario.host_key] = 1;
+        }
+      });
+      for (let pagina in contarPaginas) {
+        paginas.push(pagina);
+      }
+      console.log(paginas);
+      console.log(contarPaginas);
+    });
+  }
+  get paginatedUsuarioFirefox() {
+    const start = (this.pFirefox - 1) * this.itemsPerPageFirefox;
+    const end = start + this.itemsPerPageFirefox;
+    return this.usuarioFirefox.slice(start, end);
+  }
+
+  get paginatedUsuariosEdge() {
+    const start = (this.pEdge - 1) * this.itemsPerPageEdge;
+    const end = start + this.itemsPerPageEdge;
+    return this.usuariosEdge.slice(start, end);
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     this.updateChartSize();
@@ -477,3 +597,4 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
 }
+

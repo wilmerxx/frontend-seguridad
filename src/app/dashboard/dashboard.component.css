@@ -1,8 +1,25 @@
-#top10, #bar, #paginas, #chart {
-  width: 100%;  /* Cambia esto al porcentaje de ancho que desees */
-  height: 100%; /* Cambia esto al porcentaje de altura que desees */
+table{
+  width: 100%;
 }
 
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
 
+td, th {
+  width: 25%;
+}
+.my-table {
+  width: 100%; /* Cambia esto al ancho que desees */
+}
+.numeral {
+  width: 10px;
+  text-align: center;
+  align-items: center;
+}
+.valor {
+  width: 10px;
 
+}
 
