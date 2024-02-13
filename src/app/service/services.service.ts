@@ -11,7 +11,8 @@ import {EdgeUser} from "../modelos/edge-user";
 })
 export class ServicesService {
 
-  private baseUrl = environment.baseUrl+'/cookies';
+  private baseUrl = environment.baseUrl+'cookies';
+  private baseUrl2 = environment.baseUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -25,5 +26,9 @@ export class ServicesService {
 
   getEdgeUser(): Observable<EdgeUser[]> {
     return this.http.get<EdgeUser[]>(`${this.baseUrl}/usuarios/edge`);
+  }
+
+  getEdgeSinRepetir(): Observable<any[]>{
+    return this.http.get<any[]>(`${this.baseUrl2}usuarios/edge/paginas`);
   }
 }

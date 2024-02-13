@@ -35,14 +35,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   chartOptions!: Highcharts.Options;
   chartOptions2!: Highcharts.Options;
 
-
+  @ViewChild('bar1') bar1!: ElementRef;
   @ViewChild('chart') chartElement!: ElementRef;
   @ViewChild('paginas') paginas!: ElementRef;
   @ViewChild('bar') bar!: ElementRef;
   @ViewChild('top10') top10!: ElementRef;
   @ViewChild('dashboard', { static: true }) dashboardElement!: ElementRef;
 
-  public chart: any;
+  //public chart: any;
+  public barChart1: any;
   public paginasVisitadas: any;
   public top10PaginasVisitadas: any;
   public barChart: any;
@@ -71,11 +72,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.contrasenias.length = 12;
     this._getEdge();
     this._getFirefox();
-    this.getPaginatedUsuarioFirefox()
+    this.getGraficaDeNumeroDePaginasWebSinRepeticionesEdge();
+    this.getPaginatedUsuarioFirefox();
     this.service.getEdge().subscribe(data => {
       this.dataSource = new MatTableDataSource(data);
-      console.log("datos de la tabla");
-      console.log(this.dataSource.data);
+      //console.log("datos de la tabla");
+      //console.log(this.dataSource.data);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
     });
@@ -100,7 +102,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ];
   }
   ngAfterViewInit(): void {
-    this.createChartAndAddSeries();
+    this.getGraficaDeNumeroDePaginasWebSinRepeticionesEdge();
     this.crearPaginasVisitadas();
     this.crearTop10PaginasVisitadas();
     this.crearBarChart();
@@ -143,26 +145,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
 
-  getGraficaDeNumeroDePaginasWebSinRepeticionesEdge() {
-    const contarPaginas = {};
-    let paginas: any[] = [];
-    this.service.getEdge().subscribe(data => {
-      data.forEach((usuario) => {
-        if (usuario.host_key) {
-          // @ts-ignore
-          contarPaginas[usuario.host_key]++
-        } else {
-          // @ts-ignore
-          contarPaginas[usuario.host_key] = 1;
-        }
-      });
-      for (let pagina in contarPaginas) {
-        paginas.push(pagina);
-      }
-      console.log(paginas);
-      console.log(contarPaginas);
-    });
-  }
   get paginatedUsuarioFirefox() {
     const start = (this.pFirefox - 1) * this.itemsPerPageFirefox;
     const end = start + this.itemsPerPageFirefox;
@@ -195,23 +177,27 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     // Si estás creando la gráfica directamente en el DOM, puedes actualizar el tamaño del contenedor de la gráfica.
     // Aquí hay un ejemplo de cómo puedes hacerlo con la biblioteca de gráficos lightweight-charts:
 
-    this.chart.resize(this.chartElement.nativeElement.clientWidth, this.chartElement.nativeElement.clientHeight);
-    this.chart.timeScale().fitContent();
+    //this.chart.resize(this.chartElement.nativeElement.clientWidth, this.chartElement.nativeElement.clientHeight);
+    //this.chart.timeScale().fitContent();
 
 
     this.paginasVisitadas.resize(this.paginas.nativeElement.clientWidth, this.paginas.nativeElement.clientHeight);
     this.paginasVisitadas.timeScale().fitContent();
 
+    //this.barChart1.resize(this.bar.nativeElement.clientWidth, this.bar.nativeElement.clientHeight);
+    this.barChart1.timeScale().fitContent();
+
     this.barChart.resize(this.bar.nativeElement.clientWidth, this.bar.nativeElement.clientHeight);
     this.barChart.timeScale().fitContent();
+
 
     this.top10PaginasVisitadas.resize(this.top10.nativeElement.clientWidth, this.top10.nativeElement.clientHeight);
     this.top10PaginasVisitadas.timeScale().fitContent();
 
 
   }
-
-  createChartAndAddSeries() {
+/*
+  getGraficaDeNumeroDePaginasWebSinRepeticionesEdge() {
 
     this.chart = createChart(this.chartElement.nativeElement, {
       width: 600,
@@ -275,54 +261,88 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       }
     );
 
-    areaSeries.setData([
-      {time: '2016-10-19', value: 54.98},
-      {time: '2016-10-20', value: 56.12},
-      {time: '2016-10-21', value: 57.24},
-      {time: '2016-10-24', value: 56.93},
-      {time: '2016-10-25', value: 57.64},
-      {time: '2016-10-26', value: 57.74},
-      {time: '2016-10-27', value: 57.59},
-      {time: '2017-10-19', value: 54.9},
-      {time: '2017-10-20', value: 56.01},
-      {time: '2017-10-23', value: 55.43},
-      {time: '2017-10-24', value: 54.16},
-      {time: '2017-10-25', value: 54.16},
-      {time: '2017-10-26', value: 54.16},
-      {time: '2018-10-19', value: 54.9},
-      {time: '2018-10-22', value: 57.21},
-      {time: '2018-10-23', value: 58.79},
-      {time: '2018-10-24', value: 57.42},
-      {time: '2018-10-25', value: 56.43},
-      {time: '2018-10-26', value: 56.43},
-      {time: '2018-10-29', value: 56.43},
-      {time: '2018-10-30', value: 56.43},
-      {time: '2018-10-31', value: 56.43},
-      {time: '2018-11-01', value: 56.43},
-      {time: '2018-11-02', value: 56.43},
-      {time: '2018-11-05', value: 56.43},
-      {time: '2018-11-06', value: 56.43},
-      {time: '2018-11-07', value: 56.43},
-      {time: '2018-11-08', value: 56.43},
-      {time: '2018-11-09', value: 56.43},
-      {time: '2018-11-12', value: 56.43},
-      {time: '2018-11-13', value: 56.43},
-      {time: '2018-11-14', value: 56.43},
-      {time: '2018-11-15', value: 56.43},
-      {time: '2018-11-16', value: 56.43},
-      {time: '2018-11-19', value: 56.43},
-      {time: '2018-11-20', value: 56.43},
-      {time: '2018-11-21', value: 56.43},
-      {time: '2018-11-23', value: 56.43},
-      {time: '2018-11-26', value: 56.43},
-      {time: '2018-11-27', value: 56.43},
-      {time: '2018-11-28', value: 56.43},
-      {time: '2018-11-29', value: 56.43},
-      {time: '2018-11-30', value: 56.43},
-      {time: '2018-12-03', value: 56.43},
-      {time: '2018-12-04', value: 56.43},
-      {time: '2018-12-06', value: 56.43},
-    ]);
+    this.service.getEdgeSinRepetir().subscribe(data => {
+      //console.log(data[0][0]);
+      const listaConvertida = data.map(item => {
+        return { time: item[0], value: item[1] };
+      });
+      console.log(listaConvertida);
+      
+      areaSeries.setData(listaConvertida);
+    });
+  }*/
+
+
+  public getGraficaDeNumeroDePaginasWebSinRepeticionesEdge() {
+    type PrimerDato = { [clave: number]: string };
+    const primerDato: PrimerDato = {};
+    this.service.getEdgeSinRepetir().subscribe(data => {
+      data.forEach((item, index) => {
+        const texto = item[0]; // Obtener el valor de texto de la lista
+        primerDato[index + 1] = texto; // Asignar el valor de texto al objeto
+      });
+    });
+
+    this.barChart1 = createChart(this.bar1.nativeElement, {
+      width: 600,
+      height: 300,
+      layout: {
+        background: {type: ColorType.Solid, color: '#ffffff'},
+        textColor: 'rgba(33, 56, 77, 1)',
+      },
+      grid: {
+        vertLines: {
+          color: 'rgba(197, 203, 206, 1)',
+        },
+        horzLines: {
+          color: 'rgba(197, 203, 206, 1)',
+        },
+      },
+      crosshair: {
+        mode: CrosshairMode.Normal,
+      },
+      rightPriceScale: {
+        borderColor: 'rgba(197, 203, 206, 1)',
+      },
+      timeScale: {
+        borderColor: 'rgba(197, 203, 206, 1)',
+        timeVisible: false,
+        secondsVisible: true,
+        lockVisibleTimeRangeOnResize: true,
+        tickMarkFormatter: (time: number) => {
+          const map: { [key: number]: string } = primerDato;
+          return map[time];
+        },
+      },
+    });
+
+    this.addAreaSeries1();
+  }
+
+  addAreaSeries1() {
+    const histogramSeries = this.barChart1.addHistogramSeries({
+      lastValueVisible: true,
+      color: 'rgba(33, 150, 243, 0.4)',
+      priceFormat: {
+        type: 'volume',
+      },
+      priceScaleId: '',
+      scaleMargins: {
+        top: 0.8,
+        bottom: 0,
+      },
+    });
+
+    this.service.getEdgeSinRepetir().subscribe(data => {
+      //console.log(data[0][0]);
+      var num = 0;
+      const listaConvertida = data.map(item => {
+        num = num + 1;
+        return { time: num, value: item[1] };
+      });
+      console.log(listaConvertida);
+      histogramSeries.setData(listaConvertida);
+    });
   }
 
   //ahora graficar numeros de paginas web visitadas sin repeticiones
