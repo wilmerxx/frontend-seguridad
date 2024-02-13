@@ -15,13 +15,21 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatCardModule} from "@angular/material/card";
 import {MatInputModule} from "@angular/material/input";
 import {MatDatepickerModule} from "@angular/material/datepicker";
+import { TablaEdgeComponent } from './componentes/tabla-edge/tabla-edge.component';
+import { TablaChromeComponent } from './componentes/tabla-chrome/tabla-chrome.component';
+import { GraficosEdgeComponent } from './componentes/graficos-edge/graficos-edge.component';
+import { GraficosChromeComponent } from './componentes/graficos-chrome/graficos-chrome.component';
 
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    DashboardComponent
+    DashboardComponent,
+    TablaEdgeComponent,
+    TablaChromeComponent,
+    GraficosEdgeComponent,
+    GraficosChromeComponent
   ],
   imports: [
     BrowserModule,
