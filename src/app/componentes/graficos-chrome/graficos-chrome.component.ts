@@ -1,13 +1,13 @@
-import {Component, OnInit, AfterViewInit, ElementRef, ViewChild, HostListener} from '@angular/core';
+import {Component, ElementRef, HostListener, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {createChart, CrosshairMode,ColorType} from "lightweight-charts";
 import * as Highcharts from 'highcharts/highstock';
-import {ServicesService} from "../service/services.service";
+import {ColorType, createChart, CrosshairMode} from "lightweight-charts";
+import {ServicesService} from "../../service/services.service";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+  selector: 'app-graficos-chrome',
+  templateUrl: './graficos-chrome.component.html',
+  styleUrls: ['./graficos-chrome.component.css'],
   animations: [
     trigger('detailExpand', [
       state('collapsed', style({height: '0px', minHeight: '0'})),
@@ -16,7 +16,7 @@ import {ServicesService} from "../service/services.service";
     ]),
   ],
 })
-export class DashboardComponent implements OnInit, AfterViewInit {
+export class GraficosChromeComponent implements OnInit , AfterViewInit{
 
   Highcharts: typeof Highcharts = Highcharts; // required
   chartOptions!: Highcharts.Options;
@@ -34,44 +34,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   public top10PaginasVisitadas: any;
   public barChart: any;
   public usuarios: Array<any> = [];
-  public usuariosEdge: Array<any> = [];
   public contrasenias = [];
-  public usuarioFirefox: Array<any> = [];
 
 
-  pFirefox: number = 1;
-  pEdge: number = 1;
-  itemsPerPageFirefox: number = 10; // Cambia esto al número de elementos que quieres mostrar por página
-  itemsPerPageEdge: number = 10;
-  constructor(private service: ServicesService) {
-
-  }
+  constructor(private servicio: ServicesService) { }
 
   ngOnInit(): void {
-   this.usuarios.length = 23;
+
+    this.usuarios.length = 23;
     this.contrasenias.length = 12;
-
   }
 
-  getCookies(): any[] {
-    return [
-      {id: 1, nombre: 'cookie1', valor: 'valor1', url: 'https://www.google.com', fecha: '2021-10-19'},
-      {id: 2, nombre: 'cookie2', valor: 'valor2', url: 'https://www.google.com', fecha: '2021-10-20'},
-      {id: 3, nombre: 'cookie3', valor: 'valor3', url: 'https://www.google.com', fecha: '2021-10-21'},
-      {id: 4, nombre: 'cookie4', valor: 'valor4', url: 'https://www.google.com', fecha: '2021-10-22'},
-      {id: 5, nombre: 'cookie5', valor: 'valor5', url: 'https://www.google.com', fecha: '2021-10-23'},
-      {id: 6, nombre: 'cookie6', valor: 'valor6', url: 'https://www.google.com', fecha: '2021-10-24'},
-      {id: 7, nombre: 'cookie7', valor: 'valor7', url: 'https://www.google.com', fecha: '2021-10-25'},
-      {id: 8, nombre: 'cookie8', valor: 'valor8', url: 'https://www.google.com', fecha: '2021-10-26'},
-      {id: 9, nombre: 'cookie9', valor: 'valor9', url: 'https://www.google.com', fecha: '2021-10-27'},
-      {id: 10, nombre: 'cookie10', valor: 'valor10', url: 'https://www.google.com', fecha: '2021-10-28'},
-      {id: 11, nombre: 'cookie11', valor: 'valor11', url: 'https://www.google.com', fecha: '2021-10-29'},
-      {id: 12, nombre: 'cookie12', valor: 'valor12', url: 'https://www.google.com', fecha: '2021-10-30'},
-      {id: 13, nombre: 'cookie13', valor: 'valor13', url: 'https://www.google.com', fecha: '2021-10-31'},
-      {id: 14, nombre: 'cookie14', valor: 'valor14', url: 'https://www.google.com', fecha: '2021-11-01'},
-    ];
-  }
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     this.createChartAndAddSeries();
     this.crearPaginasVisitadas();
     this.crearTop10PaginasVisitadas();
@@ -79,49 +53,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.createDashboardChart();
     this.getChartOptions();
     this.updateChartSize();
-  }
-
-  onPageChangeFirefox(event: number) {
-
-  }
-
-
-  onPageChangeEdge(event: number) {
-
-  }
-
-
-
-  getGraficaDeNumeroDePaginasWebSinRepeticionesEdge() {
-    const contarPaginas = {};
-    let paginas: any[] = [];
-    this.service.getEdge().subscribe(data => {
-      data.forEach((usuario) => {
-        if (usuario.host_key) {
-          // @ts-ignore
-          contarPaginas[usuario.host_key]++
-        } else {
-          // @ts-ignore
-          contarPaginas[usuario.host_key] = 1;
-        }
-      });
-      for (let pagina in contarPaginas) {
-        paginas.push(pagina);
-      }
-      console.log(paginas);
-      console.log(contarPaginas);
-    });
-  }
-  get paginatedUsuarioFirefox() {
-    const start = (this.pFirefox - 1) * this.itemsPerPageFirefox;
-    const end = start + this.itemsPerPageFirefox;
-    return this.usuarioFirefox.slice(start, end);
-  }
-
-  get paginatedUsuariosEdge() {
-    const start = (this.pEdge - 1) * this.itemsPerPageEdge;
-    const end = start + this.itemsPerPageEdge;
-    return this.usuariosEdge.slice(start, end);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -538,4 +469,3 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
 }
-

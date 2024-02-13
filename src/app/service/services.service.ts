@@ -5,6 +5,7 @@ import {Observable} from "rxjs";
 import {Edge} from "../modelos/edge";
 import {Firefox} from "../modelos/firefox";
 import {EdgeUser} from "../modelos/edge-user";
+import {ChromeCookies} from "../modelos/chrome-cookies";
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +26,9 @@ export class ServicesService {
 
   getEdgeUser(): Observable<EdgeUser[]> {
     return this.http.get<EdgeUser[]>(`${this.baseUrl}/usuarios/edge`);
+  }
+
+  getChromeCookies(): Observable<ChromeCookies[]> {
+    return this.http.get<ChromeCookies[]>(`${this.baseUrl}/chrome`);
   }
 }
