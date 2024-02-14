@@ -7,6 +7,7 @@ import {ServicesService} from "../service/services.service";
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
+  selectedTab = 'global';
   constructor() {
 
   }

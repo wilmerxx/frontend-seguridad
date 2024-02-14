@@ -26,13 +26,18 @@ export class GraficosChromeComponent implements OnInit , AfterViewInit{
   @ViewChild('cantidadPaginas') cantidadPaginas!: ElementRef;
   @ViewChild('cantidadCookies') cantidadCookies!: ElementRef;
   ngOnInit(): void {
-    this.getCookiesDeSesion();
-    this.getUsuariosContrasenia();
-    this.getCookies();
+    this.loadData();
   }
 
   ngAfterViewInit() {
+
+  }
+
+  loadData(){
+    this.getUsuariosContrasenia();
+    this.getCookiesDeSesion();
     this.graficoNumeroDePaginasSinRepeticiones();
+    this.getCookies();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -41,12 +46,6 @@ export class GraficosChromeComponent implements OnInit , AfterViewInit{
   }
 
   updateChartSize() {
-    // Aquí es donde actualizas el tamaño de la gráfica basado en el tamaño de la ventana.
-    // El código exacto dependerá de cómo estés creando y actualizando la gráfica.
-    // Por ejemplo, si estás utilizando una biblioteca de gráficos, puede haber una función que puedes llamar para actualizar el tamaño de la gráfica.
-    // Si estás creando la gráfica directamente en el DOM, puedes actualizar el tamaño del contenedor de la gráfica.
-    // Aquí hay un ejemplo de cómo puedes hacerlo con la biblioteca de gráficos lightweight-charts:
-
     if (this.chartE1) {
       this.chartE1.setSize(
         this.container.nativeElement.offsetWidth,
@@ -54,9 +53,6 @@ export class GraficosChromeComponent implements OnInit , AfterViewInit{
         false
       );
     }
-
-
-
   }
 
   getUsuariosContrasenia(){

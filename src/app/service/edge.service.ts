@@ -25,10 +25,6 @@ export class EdgeService {
     return this.http.get<Edge[]>(`${this.baseUrlCookies}/edge/session`);
   }
 
-  count_edge_session_cookies(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrlCookies}/edge/session/count`);
-  }
-
   obtener_usuario_contrasenia(): Observable<EdgeUser[]> {
     return this.http.get<EdgeUser[]>(`${this.baseUrlUsers}/edge`);
   }
@@ -36,14 +32,5 @@ export class EdgeService {
   numeros_paginas_encontradas_sin_repetir(): Observable<any> {
     return this.http.get<any>(`${this.baseUrlUsers}/edge/paginas`);
   }
-
-  top_ten_paginas_encontradas_sin_repetir(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrlCookies}/edge/top`);
-  }
-
-  numero_contrasenias_encontradas(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrlUsers}/edge/contrasenias`);
-  }
-
 
 }

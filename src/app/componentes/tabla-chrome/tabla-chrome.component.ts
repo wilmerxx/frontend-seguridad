@@ -20,14 +20,19 @@ export class TablaChromeComponent implements OnInit, AfterViewInit{
 
 
   ngOnInit(): void {
-    this.service.getChromeCookies().subscribe(data => {
-      this.dataSource2 = new MatTableDataSource(data);
-    });
+   this.loadTable();
   }
 
   ngAfterViewInit(): void {
-    this.dataSource2.paginator = this.paginator2;
-    this.dataSource2.sort = this.sort2;
+  this.loadTable();
+  }
+
+  loadTable(){
+    this.service.getChromeCookies().subscribe(data => {
+      this.dataSource2 = new MatTableDataSource(data);
+      this.dataSource2.paginator = this.paginator2;
+      this.dataSource2.sort = this.sort2;
+    });
   }
 
   applyFilter2(event: Event) {

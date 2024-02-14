@@ -23,7 +23,6 @@ export class TablaEdgeComponent implements OnInit , AfterViewInit{
       this.dataSource = new MatTableDataSource(data);
       this.usuariosEdge = data;
     });
-
   }
 
   ngAfterViewInit(): void {

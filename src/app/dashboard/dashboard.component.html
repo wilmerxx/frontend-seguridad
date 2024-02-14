@@ -1,51 +1,86 @@
 <h1 class="text-center text-bg-danger p-2 mb-3">Dashboard de seguridad</h1>
-<br>
+
 <div class="container-fluid">
-  <!--figuras de navegador edge-->
-  <div class="row ">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="text-center">Graficos Chrome</h2>
-        </div>
-        <div class="card-body">
-          <app-graficos-chrome></app-graficos-chrome>
+  <ul class="nav nav-tabs p-2">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="selectedTab === 'global'" (click)="selectedTab = 'global'">Global</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="selectedTab === 'chrome'" (click)="selectedTab = 'chrome'">Chrome</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="selectedTab === 'edge'" (click)="selectedTab = 'edge'">Edge</a>
+    </li>
+  </ul>
+
+  <div *ngIf="selectedTab === 'global'">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="text-center">Graficos Global</h2>
+          </div>
+          <div class="card-body">
+            <app-graficos-global></app-graficos-global>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="row ">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="text-center">Graficos Edge</h2>
+  <div *ngIf="selectedTab === 'chrome'">
+
+    <div class="container-fluid">
+      <div class="row ">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="text-center">Graficos Chrome</h2>
+            </div>
+            <div class="card-body">
+              <app-graficos-chrome></app-graficos-chrome>
+            </div>
+          </div>
         </div>
-        <div class="card-body">
-          <app-graficos-edge></app-graficos-edge>
+      </div>
+      <!--tabla de navegador chrome-->
+      <div class="row">
+        <div class="col-md-12 card">
+          <div class="card-header">
+            <h2 class="text-center">Registro de cookies Chrome</h2>
+            <app-tabla-chrome></app-tabla-chrome>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!--tabla de navegador edge-->
-  <div class="row">
-    <div class="col-md-12 card">
-      <div class="card-header">
-        <h2 class="text-center">Registro de cookies Chrome</h2>
-      <app-tabla-chrome></app-tabla-chrome>
-    </div>
-    </div>
-  </div>
+  <div *ngIf="selectedTab === 'edge'">
+    <!--figuras de navegador edge-->
+    <div class="container-fluid">
+      <div class="row ">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="text-center">Graficos Edge</h2>
+            </div>
+            <div class="card-body">
+              <app-graficos-edge></app-graficos-edge>
+            </div>
+          </div>
+        </div>
+      </div><!--tabla de navegador edge-->
 
-  <!--tabla de navegador chrome-->
-  <div class="row">
-    <div class="col-md-12 card">
-      <div class="card-header">
-        <h2 class="text-center">Registro de cookies Edge</h2>
-        <app-tabla-edge></app-tabla-edge>
+      <div class="row">
+        <div class="col-md-12 card">
+          <div class="card-header">
+            <h2 class="text-center">Registro de cookies Edge</h2>
+            <app-tabla-edge></app-tabla-edge>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
 </div>
+
+

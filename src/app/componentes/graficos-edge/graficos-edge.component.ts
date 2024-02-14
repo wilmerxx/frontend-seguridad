@@ -16,9 +16,6 @@ export class GraficosEdgeComponent implements OnInit , AfterViewInit{
   chartE1: any;
   alertaCookiesDeSesion: number = 0;
   listaCookies: Edge[] = [];
-
-
- numeroUsuariosEncontrados: number = 0;
  listaUsuarios: EdgeUser[] = [];
   constructor(private edgeService: EdgeService) { }
 
@@ -27,14 +24,15 @@ export class GraficosEdgeComponent implements OnInit , AfterViewInit{
   @ViewChild('cantidadUsuarios') cantidadUsuarios!: ElementRef;
   @ViewChild('cantidadPaginas') cantidadPaginas!: ElementRef;
   @ViewChild('cantidadCookies') cantidadCookies!: ElementRef;
+
   ngOnInit(): void {
     this.getCookiesDeSesion();
     this.getUsuariosContrasenia();
     this.getCookies();
+    this.graficoNumeroDePaginasSinRepeticiones();
   }
 
   ngAfterViewInit() {
-    this.graficoNumeroDePaginasSinRepeticiones();
   }
   getUsuariosContrasenia(){
     this.edgeService.obtener_usuario_contrasenia().subscribe((res) => {

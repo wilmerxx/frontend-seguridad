@@ -29,8 +29,4 @@ export class ServicesService {
   numeros_paginas_encontradas_sin_repetir(): Observable<any> {
     return this.http.get<any>(`${this.baseUrlUsers}/chrome/paginas`);
   }
-
-  getChromeNumeroPaginas(): Observable<ChromeCookies[]> {
-    return this.http.get<ChromeCookies[]>(`${this.baseUrl}/chrome/numeroPaginas`);
-  }
 }

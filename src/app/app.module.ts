@@ -21,6 +21,7 @@ import { GraficosEdgeComponent } from './componentes/graficos-edge/graficos-edge
 import { GraficosChromeComponent } from './componentes/graficos-chrome/graficos-chrome.component';
 import {MatListModule} from "@angular/material/list";
 import { GraficosGlobalComponent } from './componentes/graficos-global/graficos-global.component';
+import {MatTabsModule} from "@angular/material/tabs";
 
 
 
@@ -34,22 +35,23 @@ import { GraficosGlobalComponent } from './componentes/graficos-global/graficos-
     GraficosChromeComponent,
     GraficosGlobalComponent
   ],
-    imports: [
-        BrowserModule,
-        RouterOutlet,
-        NgbModule,
-        HighchartsChartModule,
-        HttpClientModule,
-        NgxPaginationModule,
-        MatSlideToggleModule,
-        MatPaginatorModule,
-        MatTableModule,
-        MatIconModule,
-        MatCardModule,
-        MatInputModule,
-        MatDatepickerModule,
-        MatListModule
-    ],
+  imports: [
+    BrowserModule,
+    RouterOutlet,
+    NgbModule,
+    HighchartsChartModule,
+    HttpClientModule,
+    NgxPaginationModule,
+    MatSlideToggleModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatIconModule,
+    MatCardModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatListModule,
+    MatTabsModule
+  ],
   providers: [
     MatPaginatorIntl
   ],
