@@ -40,10 +40,13 @@ export class GraficosEdgeComponent implements OnInit , AfterViewInit{
         ...user,
         showPassword: false, // inicializar showPassword como false
       }));
-      console.log(this.listaUsuarios);
-      this.cantidadUsuarios.nativeElement.innerHTML = `<div class="alert alert-info" role="alert">
-    Se encontraron <b>${this.listaUsuarios.length}</b> usuarios con contraseñas guardadas
-  </div>`;
+      if(this.listaUsuarios.length > 0){
+        this.cantidadUsuarios.nativeElement.innerHTML = `<div class="alert alert-danger" role="alert">
+    Se encontraron <b>${this.listaUsuarios.length}</b> usuarios con contraseñas guardadas ☢️☣️🔴😱 </div>`;
+      }else {
+        this.cantidadUsuarios.nativeElement.innerHTML = `<div class="alert alert-primary" role="alert">
+            No se encontraron usuarios con contraseñas guardadas 😉👍 </div>`;
+        }
     })
   }
 

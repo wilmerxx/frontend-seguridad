@@ -41,9 +41,13 @@ export class GraficosGlobalComponent implements OnInit {
       let cantidadUsuarios = res.length;
       this.service.obtener_usuario_contrasenia().subscribe((res) => {
           cantidadUsuarios += res.length;
-        this.cantidadUsuarios.nativeElement.innerHTML = `<div class="alert alert-info" role="alert">
-    Se encontraron <b>${cantidadUsuarios}</b> usuarios con contraseñas guardadas
-  </div>`;
+        if(cantidadUsuarios > 0){
+          this.cantidadUsuarios.nativeElement.innerHTML = `<div class="alert alert-danger" role="alert">
+    Se encontraron <b>${cantidadUsuarios}</b> usuarios con contraseñas guardadas ☢️☣️🔴😱 </div>`;
+        }else {
+          this.cantidadUsuarios.nativeElement.innerHTML = `<div class="alert alert-primary" role="alert">
+            No se encontraron usuarios con contraseñas guardadas 😉👍 </div>`;
+        }
       });
     })
   }
