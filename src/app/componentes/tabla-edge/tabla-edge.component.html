@@ -11,11 +11,11 @@
   </mat-form-field>
 
   <div class="mat-elevation-z8 my-table" >
-    <table  class="table table-responsive table-striped" mat-table [dataSource]="dataSource" matSort #short1>
+    <table  class="table table-responsive table-striped" mat-table [dataSource]="dataSource" matSort >
       <!-- ID Column -->
       <ng-container  matColumnDef="index" class="numeral">
         <th class="numeral" mat-header-cell *matHeaderCellDef > No. </th>
-        <td class="numeral" mat-cell *matCellDef="let row; let i = index"> {{i + 1}} </td>
+        <td class="numeral" mat-cell *matCellDef="let i = index"> {{i + 1}} </td>
       </ng-container>
       <ng-container class="" matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>

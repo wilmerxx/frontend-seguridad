@@ -1,5 +1,4 @@
 export class Firefox {
-
   originAttributes: string
   name: string
   value: string
