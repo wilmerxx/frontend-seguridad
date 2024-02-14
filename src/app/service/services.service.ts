@@ -31,4 +31,8 @@ export class ServicesService {
   getChromeCookies(): Observable<ChromeCookies[]> {
     return this.http.get<ChromeCookies[]>(`${this.baseUrl}/chrome`);
   }
+
+  getChromeNumeroPaginas(): Observable<ChromeCookies[]> {
+    return this.http.get<ChromeCookies[]>(`${this.baseUrl}/chrome/numeroPaginas`);
+  }
 }
