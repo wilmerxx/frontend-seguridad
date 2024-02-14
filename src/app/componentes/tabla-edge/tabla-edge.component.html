@@ -53,6 +53,6 @@
       </tr>
     </table>
 
-    <mat-paginator #paginator [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="true"  aria-label="seleccione la paginas" ></mat-paginator>
+    <mat-paginator #paginator [length]="dataSource.data.length" [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="true"  aria-label="seleccione la paginas" ></mat-paginator>
   </div>
 </mat-card>

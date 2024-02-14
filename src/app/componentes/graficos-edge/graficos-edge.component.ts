@@ -15,7 +15,6 @@ export class GraficosEdgeComponent implements OnInit , AfterViewInit{
   totalPaginas: number = 0;
   chartE1: any;
   alertaCookiesDeSesion: number = 0;
-  numeroCookiesEncontradas: number = 0;
   listaCookies: Edge[] = [];
 
 
@@ -37,13 +36,16 @@ export class GraficosEdgeComponent implements OnInit , AfterViewInit{
   ngAfterViewInit() {
     this.graficoNumeroDePaginasSinRepeticiones();
   }
-
   getUsuariosContrasenia(){
     this.edgeService.obtener_usuario_contrasenia().subscribe((res) => {
-      this.listaUsuarios = res;
+      this.listaUsuarios = res.map(user => ({
+        ...user,
+        showPassword: false, // inicializar showPassword como false
+      }));
+      console.log(this.listaUsuarios);
       this.cantidadUsuarios.nativeElement.innerHTML = `<div class="alert alert-info" role="alert">
-      Se encontraron <b>${this.listaUsuarios.length}</b> usuarios con contraseñas guardadas
-    </div>`;
+    Se encontraron <b>${this.listaUsuarios.length}</b> usuarios con contraseñas guardadas
+  </div>`;
     })
   }
 
@@ -81,7 +83,7 @@ export class GraficosEdgeComponent implements OnInit , AfterViewInit{
         },
         colors: colores,
         title: {
-          text: 'Top 10 de paginas visitadas sin repetir'
+          text: 'Top 10 de paginas visitadas'
         },
         xAxis: {
           categories: paginas.slice(0, 10),
@@ -93,6 +95,8 @@ export class GraficosEdgeComponent implements OnInit , AfterViewInit{
           }
         },
         series: [{
+          colorByPoint: true,
+          color: '#7cb5ec',
           type: 'column',
           name: 'dominio de paginas visitadas',
           data: numeroPaginas.slice(0, 10),

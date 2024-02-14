@@ -1,79 +1,93 @@
 
+<div class="row">
+
+  <div class="col-md-3 ">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title text-center">Número de paginas web sin repeticiones</h6>
+      </div>
+      <div class="card-body">
+        <div id="cantidadPaginas" #cantidadPaginas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title text-center">Alertas de cookies de sesión</h6>
+      </div>
+      <div class="card-body">
+        <div id="alerta" #alerta ></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title text-center">Número encontrado usuarios/contraaseñas </h6>
+      </div>
+      <div class="card-body">
+        <div id="cantidadUsuarios" #cantidadUsuarios></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 ">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title text-center">Numero de cookies encontradas Edge</h6>
+      </div>
+      <div class="card-body">
+        <div id="cantidadCookies" #cantidadCookies></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="row mt-2">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title text-center">Listado de usuarios encontrados</h5>
+      </div>
+      <div class="card-body p-5">
+        <div class="row mb-3">
+          <label class="col-md-4 "><b>USUARIO</b></label>
+          <label class="col-md-4"> <b>CONTRASEÑA</b></label>
+          <label class="col-md-4"><b>URL</b></label>
+        </div>
+        <div class="row" *ngFor="let user of listaUsuarios">
+            <div class="col-md-4 p-1">
+              <p>{{user.username_value}}</p>
+            </div>
+            <div class="col-md-4">
+              <input style="border: none; " [type]="user.showPassword ? 'text' : 'password'" value="{{user.password_value}}" readonly (click)="user.showPassword = !user.showPassword">
+            </div>
+            <div class="col-md-4">
+              <p>{{user.origin_url}}</p>
+            </div>
+          <hr>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="row ">
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Top 10 de paginas visitadas</h3>
+        <h3 class="card-title">Top 10 de paginas visitadas de Edge</h3>
       </div>
       <div class="card-body">
         <div id="container2" #container2 ref-divElement>
         </div>
       </div>
     </div>
-</div>
-  <div class="row">
-
-    <div class="col-md-3 ">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="card-title">Número de paginas web sin repeticiones</h5>
-        </div>
-        <div class="card-body">
-          <div id="cantidadPaginas" #cantidadPaginas></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="card-title">Alertas de cookies de sesión</h5>
-        </div>
-        <div class="card-body">
-          <div id="alerta" #alerta ></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="card-title">Número de usuarios contraseña/encontradas</h5>
-        </div>
-        <div class="card-body">
-          <div id="cantidadUsuarios" #cantidadUsuarios></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3 ">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="card-title">Numero de cookies encontradas Edge</h5>
-        </div>
-        <div class="card-body">
-          <div id="cantidadCookies" #cantidadCookies></div>
-        </div>
-      </div>
-    </div>
-
   </div>
-
-  <div class="row mt-2">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="card-title">Listado de usuarios encontrados</h5>
-        </div>
-        <div class="card-body">
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-
 
 </div>
 

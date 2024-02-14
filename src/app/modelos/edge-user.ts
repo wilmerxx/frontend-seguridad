@@ -5,7 +5,7 @@ export class EdgeUser {
   password_value: string
   date_created: string
   date_last_used: string
-
+  showPassword: boolean = false
 
   constructor() {
     this.origin_url = ''

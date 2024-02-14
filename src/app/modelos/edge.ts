@@ -17,6 +17,7 @@ export class Edge {
   top_frame_site_key: string
   value: string
 
+
   constructor() {
     this.creation_utc = ''
     this.encrypted_value = ''

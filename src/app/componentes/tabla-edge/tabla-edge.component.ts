@@ -4,6 +4,7 @@ import {Edge} from "../../modelos/edge";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {ServicesService} from "../../service/services.service";
+import {EdgeService} from "../../service/edge.service";
 
 @Component({
   selector: 'app-tabla-edge',
@@ -16,29 +17,20 @@ export class TablaEdgeComponent implements OnInit , AfterViewInit{
   public usuariosEdge: Array<any> = [];
   @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild('short1') sort!: MatSort;
-  constructor(private service: ServicesService) { }
-
-  _getEdge() {
-    this.service.getEdge().subscribe(data => {
+  constructor(private service: EdgeService) { }
+  ngOnInit(): void {
+    this.service.getEdgeCookies().subscribe(data => {
+      this.dataSource = new MatTableDataSource(data);
       this.usuariosEdge = data;
-      console.log("datos de la tabla");
-      console.log(this.usuariosEdge);
     });
+
   }
+
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-
-    }
-
-  ngOnInit(): void {
-    this.service.getEdge().subscribe(data => {
-      this.dataSource = new MatTableDataSource(data);
-      console.log("datos de la tabla");
-      console.log(this.dataSource.data);
-    });
-    this._getEdge();
   }
+
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;

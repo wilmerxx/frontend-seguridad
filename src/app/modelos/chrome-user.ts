@@ -7,7 +7,7 @@ export class ChromeUser {
   date_created: string
   date_last_used: string
   date_password_modified: string
-
+  showPassword: boolean = false
   constructor() {
     this.origin_url = ''
     this.username_value = ''
